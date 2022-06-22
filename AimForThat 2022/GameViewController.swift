@@ -17,13 +17,9 @@ class GameViewController: UIViewController {
     
     @IBOutlet weak var slider: UISlider!
     
-    
-    
     @IBOutlet weak var targetLabel: UILabel!
     
-    
     @IBOutlet weak var scoreLabel: UILabel!
-    
     
     @IBOutlet weak var roundLabel: UILabel!
     
@@ -32,12 +28,30 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-    starNewRoud()
+        
+    setupSlider()
+        
+    resetGame()
     updateLabels()
-        
-        
-    }
+}
 
+    func setupSlider(){
+        let thumbImageNormal = UIImage (named: "SliderThumb-Normal")
+        let thumbImageHiglighted = UIImage (named: "SliderThumb-Highlighted")
+        let trackLetftImage = UIImage(named: "SliderTrackLeft")
+        let trackRightImage = UIImage (named: "SliderTrackRight")
+        
+        self.slider.setThumbImage(thumbImageNormal, for: .normal)
+        self.slider.setThumbImage(thumbImageHiglighted, for: .highlighted)
+        
+        let insets = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
+        
+        let trackLeftResizable = trackLetftImage?.resizableImage(withCapInsets: insets)
+        let trackRightResizable = trackRightImage?.resizableImage(withCapInsets:insets)
+        
+        self.slider.setMinimumTrackImage(trackLeftResizable, for: .normal)
+        self.slider.setMaximumTrackImage(trackRightResizable, for: .normal)
+    }
     
     @IBAction func showAlert() {
         
@@ -59,10 +73,6 @@ class GameViewController: UIViewController {
         var points = 100 - difference
         
        
-        
-        let message = """
-            Has marcado \(points) puntos
-         """
         let title: String
         
         switch difference {
@@ -79,6 +89,8 @@ class GameViewController: UIViewController {
             title = "Has ido lejos... "
         }
         
+        let message = "Has marcado \(points) puntos"
+        
         self.score += points
         
         
@@ -86,18 +98,23 @@ class GameViewController: UIViewController {
         
         
         
-        let action = UIAlertAction(title: "Genial!", style: .default, handler: nil )
+        let action = UIAlertAction(title: "OK!", style: .default, handler:
+        {action in
+            self.starNewRoud()
+            
+            self.updateLabels()
+            
+    
+           
+        } )
         
 //
         alert.addAction(action)
 
         present(alert, animated: true)
         
-        starNewRoud()
-        updateLabels()
         
     }
-    
     
     @IBAction func sliderMoved(_ sender: UISlider) {
         self.currentValue = lroundf(sender.value)
@@ -108,15 +125,24 @@ class GameViewController: UIViewController {
         self.currentValue = 50
         self.slider.value = Float(self.currentValue)
         self.round += 1
-       
     }
-    
-    
     func updateLabels (){
         self.targetLabel.text = "\(self.targetValue)"
         self.scoreLabel.text = "\(self.score)"
         self.roundLabel.text = "\(self.round)"
     }
+    @IBAction func starNewGame (){
+        resetGame()
+        updateLabels()
+        
+    }
+    func resetGame (){
+        self.score = 0
+        self.round = 0
+        self.starNewRoud()
+    }
+    
 }
+
 
  
