@@ -104,7 +104,12 @@ class GameViewController: UIViewController {
             
             self.updateLabels()
             
-    
+            let transition = CATransition()
+            transition.type = .fade
+            transition.duration = 1
+            transition.timingFunction = CAMediaTimingFunction(name: .easeIn)
+            
+            self.view.layer.add(transition, forKey:nil)
            
         } )
         
@@ -112,6 +117,8 @@ class GameViewController: UIViewController {
         alert.addAction(action)
 
         present(alert, animated: true)
+        
+        
         
         
     }
@@ -134,6 +141,16 @@ class GameViewController: UIViewController {
     @IBAction func starNewGame (){
         resetGame()
         updateLabels()
+        
+        
+        let transition = CATransition()
+        transition.type = .fade
+        transition.duration = 1
+        transition.timingFunction = CAMediaTimingFunction(name: .easeIn)
+        
+        self.view.layer.add(transition, forKey:nil)
+        
+        
         
     }
     func resetGame (){
