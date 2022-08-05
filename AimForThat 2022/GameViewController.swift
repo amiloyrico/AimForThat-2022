@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import QuartzCore
 
 class GameViewController: UIViewController {
 
@@ -14,6 +15,8 @@ class GameViewController: UIViewController {
     var targetValue  : Int = 0
     var score        : Int = 0
     var round        : Int = 0
+    var timer : Timer?
+    var time = 0
     
     @IBOutlet weak var slider: UISlider!
     
@@ -24,6 +27,13 @@ class GameViewController: UIViewController {
     @IBOutlet weak var roundLabel: UILabel!
     
     
+    @IBOutlet weak var timerLabel: UILabel!
+    
+    
+    @IBOutlet weak var maxScoreLabel: UILabel!
+    
+    
+    // MARK: - EVENTS CONTROL
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,23 +45,7 @@ class GameViewController: UIViewController {
     updateLabels()
 }
 
-    func setupSlider(){
-        let thumbImageNormal = UIImage (named: "SliderThumb-Normal")
-        let thumbImageHiglighted = UIImage (named: "SliderThumb-Highlighted")
-        let trackLetftImage = UIImage(named: "SliderTrackLeft")
-        let trackRightImage = UIImage (named: "SliderTrackRight")
-        
-        self.slider.setThumbImage(thumbImageNormal, for: .normal)
-        self.slider.setThumbImage(thumbImageHiglighted, for: .highlighted)
-        
-        let insets = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
-        
-        let trackLeftResizable = trackLetftImage?.resizableImage(withCapInsets: insets)
-        let trackRightResizable = trackRightImage?.resizableImage(withCapInsets:insets)
-        
-        self.slider.setMinimumTrackImage(trackLeftResizable, for: .normal)
-        self.slider.setMaximumTrackImage(trackRightResizable, for: .normal)
-    }
+    // MARK: -Functions controls
     
     @IBAction func showAlert() {
         
@@ -127,6 +121,26 @@ class GameViewController: UIViewController {
         self.currentValue = lroundf(sender.value)
     }
     
+    
+    // MARK: - FUNCTIONS
+    func setupSlider(){
+        let thumbImageNormal = UIImage (named: "SliderThumb-Normal")
+        let thumbImageHiglighted = UIImage (named: "SliderThumb-Highlighted")
+        let trackLetftImage = UIImage(named: "SliderTrackLeft")
+        let trackRightImage = UIImage (named: "SliderTrackRight")
+        
+        self.slider.setThumbImage(thumbImageNormal, for: .normal)
+        self.slider.setThumbImage(thumbImageHiglighted, for: .highlighted)
+        
+        let insets = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
+        
+        let trackLeftResizable = trackLetftImage?.resizableImage(withCapInsets: insets)
+        let trackRightResizable = trackRightImage?.resizableImage(withCapInsets:insets)
+        
+        self.slider.setMinimumTrackImage(trackLeftResizable, for: .normal)
+        self.slider.setMaximumTrackImage(trackRightResizable, for: .normal)
+    }
+    
     func starNewRoud () {
         self.targetValue = 1 + Int(arc4random_uniform(100))
         self.currentValue = 50
@@ -141,7 +155,7 @@ class GameViewController: UIViewController {
     @IBAction func starNewGame (){
         resetGame()
         updateLabels()
-        
+
         
         let transition = CATransition()
         transition.type = .fade
@@ -151,14 +165,67 @@ class GameViewController: UIViewController {
         self.view.layer.add(transition, forKey:nil)
         
         
-        
     }
     func resetGame (){
+        
+        
+        var maxscore = UserDefaults.standard.integer(forKey: "maxscore")
+        
+        if maxscore < self.score {
+            maxscore = self.score
+            UserDefaults.standard.set(self.score, forKey: "maxscore")
+            
+           
+        }
+        
+        
+        self.maxScoreLabel.text = "\(maxscore)"
+        
         self.score = 0
         self.round = 0
+        self.time = 60
+    
+        
+        if timer != nil {
+            timer?.invalidate()
+        }
+        
+        timer = Timer.scheduledTimer(timeInterval:1.0, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
+        
+        self.updateLabels()
         self.starNewRoud()
+        
     }
     
+    
+    // MARK: Timer
+//    func initTimer(){
+//        timer = Timer.scheduledTimer(timeInterval:1.0, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
+//    }
+    
+    
+    @objc func tick (){
+        self.time -= 1
+        self.timerLabel.text = "\(self.time)"
+        
+        if self.time <= 0 {
+            
+            
+            
+            self.resetGame()
+            
+        }
+        
+        
+       
+        
+        
+    }
+ 
+    func stopTimer(){
+        timer?.invalidate()
+        
+    }
 }
 
 
